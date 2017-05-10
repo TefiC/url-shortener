@@ -62,7 +62,7 @@ app.get('/new/*', function(req, res){
 				// extract the data from the first document found and return it as a JSON
 				if (documents.length != 0) {
 					
-					console.log('ALREADY IN DATABASE');
+					// console.log('ALREADY IN DATABASE');
 					
 					db.close();
 					
@@ -82,7 +82,7 @@ app.get('/new/*', function(req, res){
 					urlsCollection.insert({
 						
 					  "long-url": urlInput,
-					  "short-url": 'https://www.shorturl/' + id.toString()
+					  "short-url": 'https://url-shortener-est.herokuapp.com/' + id.toString()
 						
 					}, function(err, doc){
 						
@@ -97,7 +97,7 @@ app.get('/new/*', function(req, res){
 						var data = {
 							
 							"long-url": urlInput,
-							"short-url": 'https://www.shorturl/' + id.toString() 
+							"short-url": 'https://url-shortener-est.herokuapp.com/' + id.toString() 
 						
 						}
 						
@@ -120,64 +120,51 @@ app.get('/new/*', function(req, res){
 	}
 });
 
-app.get('/*', function(req, res) {
-	var input = req.params[0];
+app.get('/:url', function(req, res) {
+	// var input = req.params[0];
 	
+	//The input is a short url
+	var input = req.params.url;
 	
 // 	console.log('INPUT AND SLICE', input, input.slice(0, 21));
 // 	console.log(input.slice(0, 21) == 'https://www.shorturl/');
 	
 	
-	//Determine if it's a short or long URL. 
-	
-	//If it's short, search its corresponding long url in the database
-	if (input.slice(0, 21) == 'https://www.shorturl/') {
-		   
-		mongo.connect(dataURL, function(err, db) {
-			
-		  //  console.log('SHORT');
-			   
-			if (err) throw err;
-			   
-			var urlsCollection = db.collection('urls');
-			
-			urlsCollection.find({
-				
-				"short-url": {$eq: input}
-				
-			}).toArray(function(err, documents){
-				
-			   if (err) throw err;
-			   
-			 //  console.log('DOCUMENTS FOUND', documents.length);
-			   
-			   if (documents.length>0) {
-				   
-				   var finalUrl = documents[0]["long-url"];
-				   
-				  //console.log(finalUrl);
-				   
-				   res.redirect(finalUrl);
-				   
-			   } else {
-				   
-				   res.end('No URL matched in our database');
-				   
-			   }
-			});
-			
-		});
-		   
-		   
-	//Else, if it's long, redirect directly
-	} else {
+	mongo.connect(dataURL, function(err, db) {
 		
-	   // console.log('LONG');
+	  //  console.log('SHORT');
 		   
-		res.redirect(input);
+		if (err) throw err;
 		   
-	}
-	  
+		var urlsCollection = db.collection('urls');
+		
+		urlsCollection.find({
+			
+			"short-url": {$eq: input}
+			
+		}).toArray(function(err, documents){
+			
+		   if (err) throw err;
+		   
+		 //  console.log('DOCUMENTS FOUND', documents.length);
+		   
+		   if (documents.length>0) {
+			   
+			   var finalUrl = documents[0]["long-url"];
+			   
+			  //console.log(finalUrl);
+			   
+			   res.redirect(finalUrl);
+			   
+		   } else {
+			   
+			   res.end('No URL matched in our database');
+			   
+		   }
+		});
+		
+	});
+		 
 });
 
 app.listen(process.env.PORT, function () {
