@@ -68,7 +68,7 @@ app.get('/new/*', function(req, res){
 					
 					var data = {
 						"long-url": documents[0]["long-url"],
-						"short-url": documents[0]["short-url"]
+						"short-url": 'https://url-shortener-est.herokuapp.com/' + documents[0]["short-url"]
 					}
 					
 					res.end(JSON.stringify(data));
