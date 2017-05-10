@@ -7,7 +7,10 @@ var urlValidator = require("url-validator");
 var shortId = require("shortid");
 var mongo = require("mongodb").MongoClient;
 
-var dataURL = 'mongodb://localhost:27017/url-shortener'; 
+// var dataURL = 'mongodb://localhost:27017/url-shortener'; 
+
+//Define an environment variable for mLab database URI
+var dataURL = process.env.MONGOLAB_URI;
 
 /*
  * App
@@ -57,8 +60,8 @@ app.get('/new/*', function(req, res){
 				//If it found a match, close the database
 				// extract the data from the first document found and return it as a JSON
 				if (documents.length != 0) {
-				    
-				    console.log('ALREADY IN DATABASE');
+					
+					console.log('ALREADY IN DATABASE');
 					
 					db.close();
 					
@@ -80,11 +83,13 @@ app.get('/new/*', function(req, res){
 					  "long-url": urlInput,
 					  "short-url": 'https://www.shorturl/' + id.toString()
 						
-					}, function(err){
+					}, function(err, doc){
 						
 						if (err) throw err;
 						
-						console.log('NEW DOCUMENT INSERTED');
+						// console.log('NEW DOCUMENT INSERTED');
+						
+						// console.log(doc);
 						
 						//Send the data just added to the client, close the database
 						//and update the counter
@@ -96,7 +101,7 @@ app.get('/new/*', function(req, res){
 						}
 						
 						db.close();
-						res.end(data);
+						res.end(JSON.stringify(data));
 						
 					});
 				}
@@ -128,7 +133,7 @@ app.get('/*', function(req, res) {
 	if (input.slice(0, 21) == 'https://www.shorturl/') {
 		   
 		mongo.connect(dataURL, function(err, db) {
-		    
+			
 		  //  console.log('SHORT');
 			   
 			if (err) throw err;
@@ -149,7 +154,7 @@ app.get('/*', function(req, res) {
 				   
 				   var finalUrl = documents[0]["long-url"];
 				   
-				//   console.log(finalUrl);
+				  //console.log(finalUrl);
 				   
 				   res.redirect(finalUrl);
 				   
@@ -165,7 +170,7 @@ app.get('/*', function(req, res) {
 		   
 	//Else, if it's long, redirect directly
 	} else {
-	    
+		
 	   // console.log('LONG');
 		   
 		res.redirect(input);
@@ -175,5 +180,5 @@ app.get('/*', function(req, res) {
 });
 
 app.listen(process.env.PORT, function () {
-  console.log('Example app listening on port!');
-})
+	console.log('Example app listening on port!');
+});
