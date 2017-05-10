@@ -7,11 +7,10 @@ var urlValidator = require("url-validator");
 var shortId = require("shortid");
 var mongo = require("mongodb").MongoClient;
 
-// var dataURL = 'mongodb://localhost:27017/url-shortener'; 
 
-//Define an environment variable for mLab database URI
-
+//Use an environment variable for mLab database URI
 var dataURL = process.env.MONGOLAB_URI;
+
 
 /*
  * App
@@ -40,10 +39,6 @@ app.get('/new/*', function(req, res){
 			if (err) throw err; 
 	   
 			var urlsCollection = db.collection('urls');
-			
-			//Reset the collection for debugging           
-			// urlsCollection.remove({});
-			// res.send('Removed');
 		   
 			// Search for a long url the user gave as input
 			urlsCollection.find({
@@ -55,8 +50,6 @@ app.get('/new/*', function(req, res){
 				if (err) throw err;
 				
 				var id = shortId.generate();
-				
-				// console.log('FOUND this', documents);
 				
 				//If it found a match, close the database
 				// extract the data from the first document found and return it as a JSON
@@ -76,21 +69,15 @@ app.get('/new/*', function(req, res){
 				//Else, create a new document to store the shortened version url
 				} else {
 					
-					// console.log('No match, creating document');
-					
 					//Create a document with the user's input and a shortened version of the url
 					urlsCollection.insert({
 						
 					  "long-url": urlInput,
 					  "short-url": id.toString()
 						
-					}, function(err, doc){
+					}, function(err, doc) {
 						
 						if (err) throw err;
-						
-						// console.log('NEW DOCUMENT INSERTED');
-						
-						// console.log(doc);
 						
 						//Send the data just added to the client, close the database
 						//and update the counter
@@ -112,27 +99,19 @@ app.get('/new/*', function(req, res){
 	} else {
 		
 		var data = {
-			"Error": "Not a valid URL"
+			"Error" : "Not a valid URL"
 		}
 		
 		res.end(JSON.stringify(data));
-		
 	}
 });
 
 app.get('/:id', function(req, res) {
-	// var input = req.params[0];
 	
 	//The input is a short url
 	var input = req.params.id;
 	
-// 	console.log('INPUT AND SLICE', input, input.slice(0, 21));
-// 	console.log(input.slice(0, 21) == 'https://www.shorturl/');
-	
-	
 	mongo.connect(dataURL, function(err, db) {
-		
-	  //  console.log('SHORT');
 		   
 		if (err) throw err;
 		   
@@ -146,13 +125,10 @@ app.get('/:id', function(req, res) {
 			
 		   if (err) throw err;
 		   
-		 //  console.log('DOCUMENTS FOUND', documents.length);
-		   
+		   //If it found matchess
 		   if (documents.length>0) {
 			   
 			   var finalUrl = documents[0]["long-url"];
-			   
-			  //console.log(finalUrl);
 			   
 			   res.redirect(finalUrl);
 			   
