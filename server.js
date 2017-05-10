@@ -10,6 +10,7 @@ var mongo = require("mongodb").MongoClient;
 // var dataURL = 'mongodb://localhost:27017/url-shortener'; 
 
 //Define an environment variable for mLab database URI
+
 var dataURL = process.env.MONGOLAB_URI;
 
 /*
