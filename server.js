@@ -82,7 +82,7 @@ app.get('/new/*', function(req, res){
 					urlsCollection.insert({
 						
 					  "long-url": urlInput,
-					  "short-url": 'https://url-shortener-est.herokuapp.com/' + id.toString()
+					  "short-url": id.toString()
 						
 					}, function(err, doc){
 						
@@ -120,11 +120,11 @@ app.get('/new/*', function(req, res){
 	}
 });
 
-app.get('/:url', function(req, res) {
+app.get('/:id', function(req, res) {
 	// var input = req.params[0];
 	
 	//The input is a short url
-	var input = req.params.url;
+	var input = req.params.id;
 	
 // 	console.log('INPUT AND SLICE', input, input.slice(0, 21));
 // 	console.log(input.slice(0, 21) == 'https://www.shorturl/');
